@@ -1,5 +1,8 @@
 package com.codegym.studentmanagement.config;
 
+import com.codegym.studentmanagement.jwt.JsonWebTokenEntrypoint;
+import com.codegym.studentmanagement.jwt.JsonWebTokenFilter;
+import jakarta.servlet.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,6 +17,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -23,11 +27,18 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfiguration {
     @Autowired
     private UserDetailsService userDetailsService;
+    @Autowired
+    private JsonWebTokenEntrypoint jsonWebTokenEntrypoint;
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService)
                 .passwordEncoder(new BCryptPasswordEncoder());
+    }
+
+    @Bean
+    public Filter jwtAuthenticationFilter() {
+        return new JsonWebTokenFilter();
     }
 
     @Bean
@@ -63,18 +74,23 @@ public class SecurityConfiguration {
     public SecurityFilterChain configure(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(
                         (requests) -> requests
-                                .requestMatchers(HttpMethod.POST, "/api/auth/**")
+                                .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/register")
                                 .permitAll()
-                                .requestMatchers("/**")
-                                .hasAnyRole("ADMIN", "USER")
+                                .requestMatchers(HttpMethod.GET, "/login", "/register", "/table")
+                                .permitAll()
+                                .requestMatchers("/api/course")
+                                .hasAnyRole("ADMIN")
                                 .anyRequest()
                                 .authenticated())
                 .sessionManagement(
                         (sessionManagement) -> sessionManagement
                                 .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
                 )
+                .exceptionHandling(httpSecurityExceptionHandlingConfigurer ->
+                        httpSecurityExceptionHandlingConfigurer.authenticationEntryPoint(jsonWebTokenEntrypoint))
+                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .cors((httpSecurityCorsConfigurer) -> corsConfigurationSource())
-                .csrf((csrf) -> csrf.ignoringRequestMatchers("/api/auth/**"));
+                .csrf((csrf) -> csrf.ignoringRequestMatchers("/api/**"));
         return http.build();
     }
 }

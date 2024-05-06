@@ -1,6 +1,10 @@
 package com.codegym.studentmanagement.service.impl;
 
+import com.codegym.studentmanagement.entity.User;
+import com.codegym.studentmanagement.jwt.JsonWebTokenProvider;
 import com.codegym.studentmanagement.payload.request.LoginRequest;
+import com.codegym.studentmanagement.payload.request.RegisterRequest;
+import com.codegym.studentmanagement.payload.response.LoginResponse;
 import com.codegym.studentmanagement.payload.response.ResponsePayload;
 import com.codegym.studentmanagement.repository.IUserRepository;
 import com.codegym.studentmanagement.service.IUserService;
@@ -10,6 +14,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,6 +22,8 @@ import org.springframework.stereotype.Service;
 public class UserService implements IUserService {
     private final IUserRepository userRepository;
     private final AuthenticationManager authenticationManager;
+    private final PasswordEncoder passwordEncoder;
+    private final JsonWebTokenProvider jsonWebTokenProvider;
 
     @Override
     public ResponsePayload login(LoginRequest loginRequest) {
@@ -27,15 +34,20 @@ public class UserService implements IUserService {
                             loginRequest.getUsername(),
                             loginRequest.getPassword()));
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            System.out.println(authentication.getPrincipal());
+            String token = jsonWebTokenProvider.generateToken(authentication.getName());
+            User user = userRepository.findByUsername(loginRequest.getUsername());
+            LoginResponse tokenResponse =  LoginResponse.builder()
+                    .fullName(user.getFullName())
+                    .username(user.getUsername())
+                    .token(token)
+                    .build();
             return ResponsePayload
                     .builder()
                     .message("Login success")
-                    .data("token")
+                    .data(tokenResponse)
                     .status(HttpStatus.OK)
                     .build();
-//        String token = JwtUtils
-//                .generateToken(authentication);
+
         } catch (Exception e) {
             return ResponsePayload
                     .builder()
@@ -44,6 +56,22 @@ public class UserService implements IUserService {
                     .status(HttpStatus.UNAUTHORIZED)
                     .build();
         }
+    }
+
+    @Override
+    public ResponsePayload register(RegisterRequest registerRequest) {
+        User user = new User();
+        user.setUsername(registerRequest.getUsername());
+        String password = passwordEncoder.encode(registerRequest.getPassword());
+        user.setPassword(password);
+        user.setEmail(registerRequest.getEmail());
+        user.setFullName(registerRequest.getFullName());
+        userRepository.save(user);
+        return ResponsePayload.builder()
+                .message("Register success")
+                .data(null)
+                .status(HttpStatus.OK)
+                .build();
     }
 }
 //        return ResponsePayload.builder()
