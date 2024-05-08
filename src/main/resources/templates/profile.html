@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Profile</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+            crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"
+            integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+<nav th:replace="~{index :: nav}"></nav>
+<div>
+    <label for="fileInput" class="form-label">Large file input example</label>
+    <input class="form-control form-control-lg" id="fileInput" type="file">
+    <input type="button" class="btn btn-primary" id="uploadBtn" value="Upload">
+</div>
+<script>
+    $(document).ready(function () {
+        $("#uploadBtn").on("click", function () {
+            const fileInput = $("#fileInput")[0];
+            const file = fileInput.files[0];
+
+            const formData = new FormData();
+            formData.append("file", file);
+
+            $.ajax({
+                url: "http://localhost:8080/api/user/upload",
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    alert("File uploaded successfully.");
+                    window.location.reload();
+                    // Xử lý thành công
+                },
+                error: function (xhr, status, error) {
+                    alert("Failed to upload file.");
+                    // Xử lý lỗi
+                }
+            });
+        });
+    });
+
+</script>
+
+</body>
+</html>

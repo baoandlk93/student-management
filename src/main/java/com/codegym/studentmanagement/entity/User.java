@@ -29,6 +29,7 @@ public class User {
     private String password;
     private String email;
     private String fullName;
+    private String avatar;
     @ManyToMany
     @JsonIgnore
     @JoinTable(name = "user_role",

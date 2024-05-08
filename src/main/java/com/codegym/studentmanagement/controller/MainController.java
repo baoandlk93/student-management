@@ -30,4 +30,13 @@ public class MainController {
     public ModelAndView login() {
         return new ModelAndView("login");
     }
+    @GetMapping("/register")
+    public ModelAndView register() {
+        return new ModelAndView("register");
+    }
+
+    @GetMapping("/profile")
+    public ModelAndView profile() {
+        return new ModelAndView("profile");
+    }
 }

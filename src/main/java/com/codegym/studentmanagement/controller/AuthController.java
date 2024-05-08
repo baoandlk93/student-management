@@ -1,6 +1,7 @@
 package com.codegym.studentmanagement.controller;
 
 import com.codegym.studentmanagement.payload.request.LoginRequest;
+import com.codegym.studentmanagement.payload.request.RegisterRequest;
 import com.codegym.studentmanagement.payload.response.ResponsePayload;
 import com.codegym.studentmanagement.service.IUserService;
 import lombok.AllArgsConstructor;
@@ -19,6 +20,12 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<ResponsePayload> login(@RequestBody LoginRequest loginRequest) {
         ResponsePayload responsePayload = userService.login(loginRequest);
+        return ResponseEntity.ok(responsePayload);
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<ResponsePayload> register(@RequestBody RegisterRequest registerRequest) {
+        ResponsePayload responsePayload = userService.register(registerRequest);
         return ResponseEntity.ok(responsePayload);
     }
 }
