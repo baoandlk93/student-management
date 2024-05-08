@@ -76,10 +76,8 @@ public class SecurityConfiguration {
                         (requests) -> requests
                                 .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/register", "/api/user/upload")
                                 .permitAll()
-                                .requestMatchers(HttpMethod.GET, "/login", "/register", "/table", "/profile", "/api/**")
-                                .permitAll()
-                                .requestMatchers("/api/course")
-                                .hasAnyRole("ADMIN")
+                                .requestMatchers("/**")
+                                .hasAnyRole("ADMIN", "USER")
                                 .anyRequest()
                                 .authenticated())
                 .sessionManagement(
