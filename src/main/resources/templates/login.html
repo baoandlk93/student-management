@@ -41,9 +41,10 @@
                 password: password
             }),
             success: function (result) {
+                console.log(result)
                 localStorage.setItem("user", JSON.stringify(result.data))
                 localStorage.setItem("token", JSON.stringify(result.data.token))
-                window.location.href = "http://localhost:8080/table"
+                // window.location.href = "http://localhost:8080/table"
             },
             error: function (error) {
                 console.log(error)

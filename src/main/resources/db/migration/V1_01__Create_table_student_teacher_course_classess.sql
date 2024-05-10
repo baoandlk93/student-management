@@ -1,3 +1,11 @@
+create table admin
+(
+    id      binary(16)   not null
+        primary key,
+    name    varchar(255) not null unique,
+    user_id binary(16)   null,
+    constraint FKadminuser foreign key (user_id) references user (id)
+);
 create table student
 (
     id         binary(16)   not null
@@ -64,4 +72,20 @@ create table course_teacher
         foreign key (teacher_id) references teacher (id)
 );
 
+alter table student
+    add column user_id binary(16) null,
+    add constraint FKstudentuser
+        foreign key (user_id) references user (id);
+alter table teacher
+    add column user_id binary(16) null,
+    add constraint FKteacheruser
+        foreign key (user_id) references user (id);
 
+
+alter table user
+    add column student_id binary(16) null,
+    add column teacher_id binary(16) null,
+    add column admin_id   binary(16) null,
+    add constraint FKuseradmin foreign key (admin_id) references admin (id),
+    add constraint FKuserstudent foreign key (student_id) references student (id),
+    add constraint FKuserteacher foreign key (teacher_id) references teacher (id);

@@ -1,5 +1,8 @@
 package com.codegym.studentmanagement.entity;
 
+import com.codegym.studentmanagement.entity.person.Admin;
+import com.codegym.studentmanagement.entity.person.Student;
+import com.codegym.studentmanagement.entity.person.Teacher;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -8,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -36,4 +40,18 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     private Set<Role> role;
+    @OneToOne(mappedBy = "user")
+    @JoinColumn(name = "admin_id", referencedColumnName = "id")
+    @JsonIgnore
+    private Admin admin;
+
+    @OneToOne(mappedBy = "user")
+    @JoinColumn(name = "student_id", referencedColumnName = "id")
+    @JsonIgnore
+    private Student student;
+
+    @OneToOne(mappedBy = "user")
+    @JoinColumn(name = "teacher_id", referencedColumnName = "id")
+    @JsonIgnore
+    private Teacher teacher;
 }

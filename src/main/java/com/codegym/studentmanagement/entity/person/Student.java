@@ -2,6 +2,7 @@ package com.codegym.studentmanagement.entity.person;
 
 import com.codegym.studentmanagement.entity.Classes;
 import com.codegym.studentmanagement.entity.Course;
+import com.codegym.studentmanagement.entity.User;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -16,6 +17,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -40,6 +42,10 @@ public class Student {
     private String phone;
     @Column(unique = true)
     private String email;
+    @OneToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @JsonBackReference
+    private User user;
 
     @ManyToOne(targetEntity = Classes.class, fetch = FetchType.EAGER)
     @JoinColumn(name = "classes_id", referencedColumnName = "id")

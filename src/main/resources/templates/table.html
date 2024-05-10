@@ -65,6 +65,21 @@
     </div>
 </div>
 <script>
+    window.onload = function () {
+        // $("#courseModal").modal('show')
+        // $("#courseModal .modal-body").empty();
+        const token = JSON.parse(localStorage.getItem("token"));
+        $.ajax({
+            url: `http://localhost:8080/api/course`,
+            type: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            },
+            success: function (res) {
+                console.log(res)
+            }
+        })
+    }
     function addCourse(id, name) {
         $("#courseModal .modal-title").text(`Đăng ký môn học cho sinh viên ${name}`)
         $("#courseModal").attr('data-id', id)

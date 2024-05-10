@@ -74,10 +74,18 @@ public class SecurityConfiguration {
     public SecurityFilterChain configure(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(
                         (requests) -> requests
-                                .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/register", "/api/user/upload")
+                                .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/register")
                                 .permitAll()
-                                .requestMatchers("/**")
-                                .hasAnyRole("ADMIN", "USER")
+                                .requestMatchers(HttpMethod.GET, "/login", "/register", "/profile", "/table")
+                                .permitAll()
+                                .requestMatchers("/api/students/**")
+                                .hasAnyRole("STUDENT")
+                                .requestMatchers("/api/teachers/**")
+                                .hasAnyRole("TEACHER")
+                                .requestMatchers("/api/user/upload")
+                                .hasAnyRole("STUDENT", "TEACHER")
+                                .requestMatchers("/api/**")
+                                .hasAnyRole("ADMIN")
                                 .anyRequest()
                                 .authenticated())
                 .sessionManagement(
