@@ -4,8 +4,10 @@ import com.codegym.studentmanagement.payload.request.LoginRequest;
 import com.codegym.studentmanagement.payload.request.RegisterRequest;
 import com.codegym.studentmanagement.payload.response.ResponsePayload;
 import com.codegym.studentmanagement.service.IUserService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,7 +26,12 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<ResponsePayload> register(@RequestBody RegisterRequest registerRequest) {
+    public ResponseEntity<ResponsePayload> register(@Valid @RequestBody RegisterRequest registerRequest,
+                                                    BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+//            bindingResult.getFieldError().getObjectName();
+            return ResponseEntity.badRequest().build();
+        }
         ResponsePayload responsePayload = userService.register(registerRequest);
         return ResponseEntity.ok(responsePayload);
     }
